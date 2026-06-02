@@ -251,3 +251,29 @@ class TestManagedSectionWriteIntegration:
         compiler.config = config
         with pytest.raises(ManagedSectionError):
             compiler._write_output_file_with_config(str(output_file), "New content.\n", config)
+
+    def test_write_output_file_managed_section_file_missing(self, tmp_path):
+        """When mode=managed_section and target file does not exist, error says file missing.
+
+        This tests issue #1593: when the file doesn't exist yet, the error must
+        clearly say 'does not exist' rather than the confusing 'markers not found'.
+        """
+        from apm_cli.compilation.agents_compiler import AgentsCompiler, CompilationConfig
+        from apm_cli.compilation.managed_section import ManagedSectionError
+
+        start = "<!-- apm:start -->"
+        end = "<!-- apm:end -->"
+        output_file = tmp_path / "AGENTS.md"
+        # File is intentionally NOT created
+
+        config = CompilationConfig(
+            output_path=str(output_file),
+            agents_md_mode="managed_section",
+            agents_md_start_marker=start,
+            agents_md_end_marker=end,
+            dry_run=False,
+        )
+
+        compiler = AgentsCompiler(str(tmp_path))
+        with pytest.raises(ManagedSectionError, match=r"(?i)does not exist|not exist|create it"):
+            compiler._write_output_file_with_config(str(output_file), "New content.\n", config)
