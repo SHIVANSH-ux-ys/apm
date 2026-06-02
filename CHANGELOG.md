@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `apm compile` with `compilation.agents_md.mode: managed_section` now raises a clear error when the target file does not exist, instead of a confusing "markers not found". Create the file first with the managed-section markers, or set `agents_md.mode: full` in `apm.yml` for the initial generation, then switch to `managed_section`. (closes #1593)
 - `apm compile --target copilot` (and `agents`) no longer writes instructions into `AGENTS.md` when `apm install` has already deployed them to `.github/instructions/`, eliminating duplicate context that Copilot would read from both locations. Mirrors the equivalent dedup behaviour that was already in place for the Claude path (`.claude/rules/`). (closes #1550, refs #1445)
 
 ### Changed
